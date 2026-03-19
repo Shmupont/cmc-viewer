@@ -5,9 +5,11 @@ let migrated = false
 
 export function getDb(): Pool {
   if (!pool) {
+    const connStr = process.env.DATABASE_URL || process.env.POSTGRES_URL || process.env.POSTGRES_PRISMA_URL
+    if (!connStr) throw new Error('No database connection string found. Set DATABASE_URL or POSTGRES_URL in Vercel env vars.')
     pool = new Pool({
-      connectionString: process.env.DATABASE_URL,
-      ssl: process.env.DATABASE_URL?.includes('localhost') ? false : { rejectUnauthorized: false },
+      connectionString: connStr,
+      ssl: connStr.includes('localhost') ? false : { rejectUnauthorized: false },
     })
   }
   return pool
